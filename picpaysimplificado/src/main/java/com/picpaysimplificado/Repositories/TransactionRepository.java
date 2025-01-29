@@ -6,4 +6,5 @@ import com.picpaysimplificado.Entities.Transaction.Transaction;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     
+    
 }
