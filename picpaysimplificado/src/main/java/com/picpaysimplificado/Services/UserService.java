@@ -1,10 +1,12 @@
 package com.picpaysimplificado.Services;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.picpaysimplificado.DTO.UserDTO;
 import com.picpaysimplificado.Entities.User;
 import com.picpaysimplificado.Entities.UserType;
 import com.picpaysimplificado.Exceptions.BalanceException;
@@ -32,7 +34,18 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
     }
 
-    public User addUser(User u){
-        return userRepository.save(u);
+    public User createUser(User user){
+        return userRepository.save(user);
     }
+
+    public User addUser(UserDTO data){
+       User newUser = new User(data);
+       this.createUser(newUser);
+       return newUser;
+    }
+
+    public List<User> getAllUsers(){
+        return userRepository.findAll();
+    }
+
 }

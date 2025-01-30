@@ -54,7 +54,7 @@ public class TransactionService {
 
     }
 
-    public boolean authorizeTransaction(User sender, BigDecimal value){
+    private boolean authorizeTransaction(User sender, BigDecimal value){
         ResponseEntity<Map> authorizationResponse = restTemplate.getForEntity("https://util.devi.tools/api/v2/authorize", Map.class);
 
         if(authorizationResponse.getStatusCode() == HttpStatus.OK){
