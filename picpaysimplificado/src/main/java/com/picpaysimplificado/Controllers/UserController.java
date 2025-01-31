@@ -3,6 +3,8 @@ package com.picpaysimplificado.Controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.picpaysimplificado.DTO.UserDTO;
@@ -31,8 +34,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers(){
-        List<User> result = userService.getAllUsers();
+    public ResponseEntity<Page<User>> getAllUsers(Pageable pageable){
+        Page<User> result = userService.getAllUsers(pageable);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -42,6 +45,13 @@ public class UserController {
         User result = userService.findById(id);
 
         return new ResponseEntity<>(result, HttpStatus.FOUND);
+    }
+
+    @GetMapping(value = "/search-document")
+    public ResponseEntity<User> searchByDocument(@RequestParam(defaultValue = "")String document){
+        User result = userService.findByDocument(document);
+
+        return new ResponseEntity<>(result,HttpStatus.FOUND);
     }
     
 }

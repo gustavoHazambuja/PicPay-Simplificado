@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.picpaysimplificado.DTO.UserDTO;
@@ -34,6 +36,10 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
     }
 
+    public User findByDocument(String document){
+        return userRepository.findUserByDocument(document).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+    }
+
     public User createUser(User user){
         return userRepository.save(user);
     }
@@ -44,8 +50,8 @@ public class UserService {
        return newUser;
     }
 
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
+    public Page<User> getAllUsers(Pageable pageable){
+        return userRepository.findAll(pageable);
     }
 
 }
