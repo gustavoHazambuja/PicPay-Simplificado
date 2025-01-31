@@ -2,6 +2,7 @@ package com.picpaysimplificado.Services;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +27,12 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    RestTemplate restTemplate;
+    private NotificationService notificationService;
 
-    public void createTransaction(TransactionDTO transaction){
+    @Autowired
+    private RestTemplate restTemplate;
+
+    public Transaction createTransaction(TransactionDTO transaction){
         User sender = userService.findById(transaction.senderId());
         User receiver= userService.findById(transaction.receiverId());
 
@@ -39,31 +43,46 @@ public class TransactionService {
             throw new TransactionException("Transação não autorizada");
         }
 
-        Transaction t = new Transaction();
-        t.setAmount(transaction.value());
-        t.setSender(sender);
-        t.setReceiver(receiver);
-        t.setTimesTamp(LocalDateTime.now());
+        Transaction newTransaction = new Transaction();
+        newTransaction.setAmount(transaction.value());
+        newTransaction.setSender(sender);
+        newTransaction.setReceiver(receiver);
+        newTransaction.setTimesTamp(LocalDateTime.now());
 
         sender.setBalance(sender.getBalance().subtract(transaction.value()));
         receiver.setBalance(receiver.getBalance().add(transaction.value()));
 
-        this.transactionRepository.save(t);
-        this.userService.addUser(sender);
-        this.userService.addUser(receiver);
+        this.transactionRepository.save(newTransaction);
+        this.userService.createUser(sender);
+        this.userService.createUser(receiver);
+
+        notificationService.sendNotification(sender, "Transação realizada com sucesso.");
+
+        notificationService.sendNotification(receiver, "Transação recebida com sucesso.");
+
+        return newTransaction;
 
     }
 
     private boolean authorizeTransaction(User sender, BigDecimal value){
         ResponseEntity<Map> authorizationResponse = restTemplate.getForEntity("https://util.devi.tools/api/v2/authorize", Map.class);
 
-        if(authorizationResponse.getStatusCode() == HttpStatus.OK){
-            String message =  (String) authorizationResponse.getBody().get("message");
-            return "Autorizado".equalsIgnoreCase(message);
+        if (authorizationResponse.getStatusCode() == HttpStatus.OK) {
+            Map<String, Object> body = authorizationResponse.getBody();
+            
+            if (body != null && body.containsKey("data")) {
+                Map<String, Object> data = (Map<String, Object>) body.get("data");
+                
+                if (data != null && data.containsKey("authorization")) {
+                    return (Boolean) data.get("authorization"); // Converte corretamente para Boolean
+                }
+            }
         }
-        else{
-            return false;
-        }
+        return false;
+    }
+
+    public List<Transaction> getAllTransactions(){
+        return transactionRepository.findAll();
     }
 
 }
