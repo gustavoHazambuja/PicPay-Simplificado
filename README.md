@@ -7,6 +7,11 @@ PicPay Simplificado é uma aplicação backend construída junto com a desenvolv
 
 A aplicação consiste em realizar tranferências de dinheiro entre usuários. Existem 2 tipos de usuários, os comuns e lojistas, ambos têm carteira com dinheiro e realizam transferências entre eles.
 
+# API
+![API](https://github.com/gustavoHazambuja/Images/blob/main/PicPaySimplificado/PostUser.png)
+
+![API](https://github.com/gustavoHazambuja/Images/blob/main/PicPaySimplificado/PostTransaction.png)
+
 # Tecnologias utilizadas
 ## Back end
 - Java
