@@ -16,7 +16,7 @@ A aplicação consiste em realizar transferências de dinheiro entre usuários. 
 ## Back end
 - Java
 - Spring Boot
-- JPA
+- JPA / Hibernate
 - Maven
 ## Implantação em produção
 - Banco de dados: Postgresql
